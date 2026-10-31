@@ -28,6 +28,40 @@ The application integrates dynamically with the **DummyJSON Products REST API**,
 
 ---
 
+## 📸 Visual Showcase & Design Previews
+
+<div align="center">
+
+### Editorial Lookbook Hero & Seasonal Direction
+*Minimalist dark container, Playfair Display serif typography, countdown announcement ticker, and 5-arch lookbook model silhouettes.*
+
+![Rive Lookbook Hero Preview](public/screenshots/hero_preview.png)
+
+<br />
+
+### Curated Catalog, Best Selling Highlights & Category Filtering
+*Live DummyJSON integration with horizontal category pills, sort selectors, and responsive dual-image hover cards.*
+
+![Rive Catalog Overview](public/screenshots/catalog_preview.png)
+
+<br />
+
+### High-Fidelity Product Detail Page (`/products/[id]`)
+*Vertical thumbnail strip, cursor-tracking zoom stage, interactive color swatches, size pickers, and real API specifications.*
+
+![Rive Product Detail Page](public/screenshots/product_detail.png)
+
+<br />
+
+### Instant Catalog Search & Query Filtering (`/products/search`)
+*Instant full-text query matching, real-time result counts, and dynamic sorting.*
+
+![Rive Search Results Page](public/screenshots/search_preview.png)
+
+</div>
+
+---
+
 ## ✨ Key Features & User Experience
 
 ### 1. Editorial Hero & Lookbook Gallery
