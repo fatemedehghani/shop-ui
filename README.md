@@ -119,31 +119,50 @@ All product data is dynamically fetched from the public **[DummyJSON Products AP
 
 ```mermaid
 graph TD
-    Client[Browser / Client] -->|HTTP Request / Hydration| AppRouter[Next.js App Router]
+    %% Browser & Server Core Lifecycle
+    Browser["User Browser"] -->|"1. HTTP Request"| AppRouter["Next.js App Router (Server)"]
+    AppRouter -->|"2. HTML Delivery"| Browser
+    Browser -.->|"3. React Hydration"| ClientUI["Client Components & State"]
 
-    subgraph App Layer
-        AppRouter --> Layout["RootLayout (layout.tsx)<br/>Fonts, Suspense Navbar, Providers, Footer"]
-        Layout --> HomePage["Page: / (page.tsx)<br/>HeroSection, Best Selling, CatalogSection"]
+    %% Server Application Layer
+    subgraph AppLayer["Application Layer (Next.js 16 App Router)"]
+        AppRouter --> Layout["RootLayout (app/layout.tsx)<br/>Fonts, Suspense Navbar, Providers, Footer"]
+        Layout --> HomePage["Page: / (app/page.tsx)<br/>HeroSection, Best Selling, CatalogSection"]
         Layout --> DetailPage["Page: /products/[id]<br/>Server Component + Suspense Loader"]
         Layout --> SearchPage["Page: /products/search<br/>SearchResultsClient + Suspense"]
     end
 
-    subgraph Data Access Layer
-        HomePage -->|Client-side call| APIClient["API Client (lib/api.ts)"]
-        DetailPage -->|Server-side call| APIClient
-        APIClient -->|fetch with next revalidate: 3600| DummyAPI["DummyJSON Products API"]
-        SearchPage -->|Client-side fetch /search?q=| DummyAPI
-        SearchModal["SearchModal.tsx"] -->|Debounced client fetch| DummyAPI
-    end
-
-    subgraph State Management
-        Providers["Providers.tsx"] --> CartDrawer["CartDrawer.tsx (Sheet)"]
+    %% Client UI Layer
+    subgraph ClientUI["Client UI & Component Layer"]
+        Layout --> Navbar["Navbar.tsx (Header & Ticker)"]
+        Navbar --> SearchModal["SearchModal.tsx (Dialog)"]
+        Layout --> Providers["Providers.tsx (Global Context)"]
+        Providers --> CartDrawer["CartDrawer.tsx (Sheet)"]
         Providers --> WishlistDrawer["WishlistDrawer.tsx (Sheet)"]
         Providers --> Toaster["Toaster (Sonner)"]
+    end
+
+    %% State Management Layer
+    subgraph StateManagement["State Management Layer"]
         CartDrawer <--> ZustandCart["useCartStore (lib/store.ts)"]
         WishlistDrawer <--> ZustandWishlist["useWishlistStore (lib/store.ts)"]
         ZustandCart -->|customStorage adapter| LocalStorage[(Browser localStorage)]
         ZustandWishlist -->|customStorage adapter| LocalStorage
+    end
+
+    %% Data Access & API Layer
+    subgraph DataAccess["Data Access & API Layer"]
+        %% Server Data Fetching via Centralized API Client (with Next.js cache revalidation)
+        DetailPage -->|"Server-side call"| APIClient["API Client (lib/api.ts)"]
+        APIClient -->|"Server fetch (next: { revalidate: 3600 })"| DummyAPI["DummyJSON Products REST API"]
+
+        %% Client Data Fetching via Centralized API Client (Catalog)
+        HomePage -->|"Client-side call (CatalogSection)"| APIClient
+        APIClient -->|"Browser fetch (client runtime)"| DummyAPI
+
+        %% Direct Client-Side Fetching (Search)
+        SearchPage -->|"Direct browser fetch (/products/search)"| DummyAPI
+        SearchModal -->|"Debounced browser fetch (/products/search)"| DummyAPI
     end
 ```
 
